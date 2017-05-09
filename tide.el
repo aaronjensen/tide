@@ -357,7 +357,9 @@ LINE is one based, OFFSET is one based and column is zero based"
          (command `(:command ,name :seq ,request-id :arguments ,args))
          (json-encoding-pretty-print nil)
          (encoded-command (json-encode command))
-         (payload (concat encoded-command "\n")))
+         (message (concat encoded-command "\n"))
+         (content-length (string-bytes message))
+         (payload (format "Content-Length: %d\r\n\r\n%s" content-length message)))
     (process-send-string (tide-current-server) payload)
     (when callback
       (puthash request-id (cons (current-buffer) callback) tide-response-callbacks))))
